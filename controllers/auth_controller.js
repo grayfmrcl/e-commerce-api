@@ -27,7 +27,7 @@ module.exports = {
     User.findByEmail(email)
       .then((user) => {
         if (user && user.validPassword(password)) {
-          jwt.sign({ id: user.id }, process.env.JWT_KEY, (err, token) => {
+          jwt.sign({ id: user.id, role: user.role }, process.env.JWT_KEY, (err, token) => {
             res.status(200).json({
               success: true,
               auth_token: token,
