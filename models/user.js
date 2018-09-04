@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const Cart = require('./cart');
+
 const { hashString, hashWithSalt } = require('../helpers/crypto_helper');
 
 const userSchema = new mongoose.Schema({
@@ -39,10 +41,17 @@ const userSchema = new mongoose.Schema({
 
 userSchema.pre('save', function preSave(next) {
   if (this.isNew) {
+    this.wasNew = this.isNew;
     const { salt, hash } = hashWithSalt(this.password);
     this.password_salt = salt;
     this.password = hash;
     next();
+  }
+});
+
+userSchema.post('save', function postSave(user) {
+  if (this.wasNew) {
+    Cart.create({ user });
   }
 });
 

@@ -1,5 +1,4 @@
 const Product = require('../models/product');
-const Cart = require('../models/cart');
 
 const findProducts = (req, res, next) => {
   Product.find()
@@ -74,27 +73,10 @@ const deleteProduct = (req, res, next) => {
     .catch(err => next(err));
 };
 
-const addToCart = (req, res, next) => {
-  Product.findById(req.params.id)
-    .then((product) => {
-      if (product) {
-        Cart.addItem(req.user.id, req.params.id, req.body.quantity)
-          .then((result) => {
-            res.status(200).json(result);
-          })
-          .catch(err => next(err));
-      } else {
-        next();
-      }
-    })
-    .catch(err => next(err));
-};
-
 module.exports = {
   findProducts,
   findProduct,
   addProduct,
   editProduct,
   deleteProduct,
-  addToCart,
 };

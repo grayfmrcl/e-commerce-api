@@ -18,6 +18,10 @@ const cartSchema = new Schema({
   ],
 });
 
+cartSchema.statics.findByUser = function findByUser(userId) {
+  return this.findOne({ user: userId });
+};
+
 cartSchema.statics.addItem = function addItem(userId, product, quantity = 1) {
   return new Promise((resolve, reject) => {
     this.findOne({ user: userId })
