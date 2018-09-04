@@ -22,13 +22,13 @@ cartSchema.statics.findByUser = function findByUser(userId) {
   return this.findOne({ user: userId });
 };
 
-cartSchema.statics.addItem = function addItem(userId, product, quantity = 1) {
+cartSchema.statics.addItem = function addItem(user, product, quantity = 1) {
   return new Promise((resolve, reject) => {
-    this.findOne({ user: userId })
+    this.findOne({ user })
       .then((cart) => {
         if (!cart) {
           this.create({
-            user: userId,
+            user,
             items: [{ product, quantity }],
           });
           resolve(cart.save());
@@ -40,6 +40,26 @@ cartSchema.statics.addItem = function addItem(userId, product, quantity = 1) {
             item.quantity += quantity || 1;
           }
           resolve(cart.save());
+        }
+      })
+      .catch(err => reject(err));
+  });
+};
+
+cartSchema.statics.removeItem = function removeItem(user, product) {
+  return new Promise((resolve, reject) => {
+    this.findOne({ user })
+      .then((cart) => {
+        if (cart) {
+          const index = cart.items.findIndex(i => i.product.equals(product));
+          if (index > -1) {
+            cart.items.splice(index, 1);
+            resolve(cart.save());
+          } else {
+            resolve();
+          }
+        } else {
+          resolve();
         }
       })
       .catch(err => reject(err));

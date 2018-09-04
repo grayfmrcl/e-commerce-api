@@ -48,7 +48,20 @@ const addItem = (req, res, next) => {
   });
 };
 
+const removeItem = (req, res, next) => {
+  findUser(req, res, next).then(() => {
+    findProduct(req, res, next).then(() => {
+      Cart.removeItem(req.user.id, req.params.productId)
+        .then((result) => {
+          res.status(200).json(result);
+        })
+        .catch(err => next(err));
+    });
+  });
+};
+
 module.exports = {
   getCart,
   addItem,
+  removeItem,
 };
