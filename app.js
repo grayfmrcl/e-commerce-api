@@ -27,10 +27,20 @@ app.use('*', (req, res) => {
   });
 });
 
-app.use((err, req, res) => {
-  res.status(500).json({
-    error: 'Oops... Something went wrong on the server.',
-  });
+/* eslint no-unused-vars: ["error", { "args": "none" }] */
+app.use((err, req, res, next) => {
+  if (err.name === 'ValidationError') {
+    res.status(400).json({
+      error: Object.values(err.errors).map(e => e.message),
+    });
+  } else if (err.name === 'CastError' && err.kind === 'ObjectId') {
+    res.status(404).json({ error: 'Resource not found.' });
+  } else {
+    console.log(err);
+    res.status(500).json({
+      error: 'Something went wrong in the server.',
+    });
+  }
 });
 
 app.listen(port, () => {
